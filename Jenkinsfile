@@ -48,8 +48,8 @@ pipeline {
 					AWS_ECR_PASS=$(${AWS_CLI} ecr get-login-password)
 					docker login --username AWS -p ${AWS_ECR_PASS} ${REPO_TAG} 
 				'''
-				app.push('latest')
-				app.push("${env.BUILD_NUMBER}")
+				app.push("${env.ENVIRONMENT}-latest")
+				app.push("${env.ENVIRONMENT}-${env.BUILD_NUMBER}")
 			}
 			}
 		}
