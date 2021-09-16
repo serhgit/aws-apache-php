@@ -34,5 +34,25 @@ pipeline {
                 }
             }
         }
+	stage ('Push image') {
+		steps {
+			script {
+			withCredentials([[
+                                $class: 'AmazonWebServicesCredentialsBinding',
+                                credentialsId: "AWS IAM Admin",
+                                accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                                secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                        ]]) {
+				sh '''
+					AWS_CLI="/usr/local/bin/aws --region=\"us-east-1\""
+					AWS_ECR_PASS=$(${AWS_CLI} ecr get-login-password)
+					docker login --username AWS -p ${AWS_ECR_PASS} ${REPO_TAG} 
+				'''
+				app.push('latest')
+				app.push("${env.BUILD_NUMBER}")
+			}
+			}
+		}
+	}
     }
 }
